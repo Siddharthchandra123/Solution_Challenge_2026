@@ -1,0 +1,136 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./Project
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./Project:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - gateway
+
+  gateway:
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile.service
+    command: uvicorn gateway.main:app --host 0.0.0.0 --port 8001
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./microservices:/app
+    environment:
+      - MITIGATE_URL=http://mitigate:8002
+      - SHAP_URL=http://shap:8003
+      - MONITOR_URL=http://monitor:8004
+      - EXPLORER_URL=http://explorer:8005
+      - DIAGNOSTICS_URL=http://diagnostics:8006
+      - AUDIT_URL=http://audit:8007
+      - AGENT_URL=http://agent:8008
+    depends_on:
+      - mitigate
+      - shap
+      - monitor
+      - explorer
+      - diagnostics
+      - audit
+      - agent
+      - db
+
+  mitigate:
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile.service
+    command: uvicorn mitigate.main:app --host 0.0.0.0 --port 8002
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./microservices:/app
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/audit_db
+    depends_on:
+      - db
+
+  shap:
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile.service
+    command: uvicorn shap_service.main:app --host 0.0.0.0 --port 8003
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./microservices:/app
+
+  monitor:
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile.service
+    command: uvicorn monitor.main:app --host 0.0.0.0 --port 8004
+    ports:
+      - "8004:8004"
+    volumes:
+      - ./microservices:/app
+
+  explorer:
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile.service
+    command: uvicorn explorer.main:app --host 0.0.0.0 --port 8005
+    ports:
+      - "8005:8005"
+    volumes:
+      - ./microservices:/app
+
+  diagnostics:
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile.service
+    command: uvicorn diagnostics.main:app --host 0.0.0.0 --port 8006
+    ports:
+      - "8006:8006"
+    volumes:
+      - ./microservices:/app
+
+  audit:
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile.service
+    command: uvicorn audit.main:app --host 0.0.0.0 --port 8007
+    ports:
+      - "8007:8007"
+    volumes:
+      - ./microservices:/app
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/audit_db
+    depends_on:
+      - db
+
+  agent:
+    build:
+      context: ./microservices
+      dockerfile: Dockerfile.service
+    command: uvicorn agent.main:app --host 0.0.0.0 --port 8008
+    ports:
+      - "8008:8008"
+    volumes:
+      - ./microservices:/app
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=audit_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

@@ -25,42 +25,53 @@ This project was built for the **Solution Challenge 2026**. It transforms opaque
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Enterprise Tech Stack (Phase 3)
 
-**Frontend (Client Layer)**
-* **Next.js 15 & React 19:** Lightning fast Server and Client routing.
-* **Tailwind CSS & Custom Globals:** Providing a sleek, native B2B Dark Mode environment.
-* **Recharts:** Highly responsive, data-bound analytical visualizations.
+Built on world-class Google infrastructure to ensure maximum credibility, scalability, and ethical transparency.
 
-**Backend (API & Core Intelligence)**
-* **FastAPI & Uvicorn:** Extreme-performance Python microservices.
-* **Scikit-Learn:** Baseline Random Forest intelligence.
-* **Fairlearn (Microsoft):** Constraint-based ethical mitigation.
-* **SHAP:** Complex TreeExplainer probability arrays.
-* **SciPy & Pandas:** Statistical significance and covariance computations.
+**Artificial Intelligence Layer**
+* **Gemini 1.5 Flash**: Orchestrating the qualitative reasoning and automated mitigation strategy generation.
+* **Vertex AI**: Continuous Model Monitoring and Feature Attribution Drift tracking.
+
+**Core Data Tools & Toolkits**
+* **TensorFlow Data Validation (TFDV)**: Scalable statistical auditing for massive datasets.
+* **Google Model Card Toolkit**: Automated generation of transparency reports per Google standards.
+* **Learning Interpretability Tool (LIT)**: Custom visual heatmapping for deep model interrogation.
+
+**Cloud & Infrastructure**
+* **Google Cloud Run**: Serverless container hosting for FastAPI microservices.
+* **Firebase & Firestore**: Real-time persistence for historical "Bias Audit Reports."
+* **Next.js & Tailwind**: The high-end visualization layer deployed on Firebase Hosting.
 
 ---
 
+## 📄 Documentation & Social Impact
+
+For a deep-dive into how our platform operates and its societal contribution, explore the following:
+
+🚀 [**ARCHITECTURE.md**](./ARCHITECTURE.md) - Scalable Cloud-Native Pipeline & Diagram.
+🌍 [**SDG_ALIGNMENT.md**](./SDG_ALIGNMENT.md) - Mapping AI Fairness to UN SDG 10 (Reduced Inequalities).
+📄 [**White_Paper_AI_Fairness.md**](./White_Paper_AI_Fairness.md) - Technical Deep-Dive into Algorithms.
+
+---
+
+
 ## 🚀 Running the Platform Locally
 
-Because this relies on an Enterprise Decoupled Architecture, you must spin up both the Frontend and the Backend servers independently.
+This application utilizes a modern Microservices Architecture orchestrated via **Docker**.
 
-### 1. Start the Machine Learning Backend (Python)
-Open a terminal in the root directory:
+### Start the entire platform via Docker
+Open a terminal in the root directory and run:
 ```bash
-# Strongly recommended to use a virtual environment
-pip install -r requirements.txt
-uvicorn api:app --reload
+docker compose up -d --build
 ```
-*The FastAPI server will boot and begin listening on `http://127.0.0.1:8000`.*
 
-### 2. Start the Compliance Dashboard (Node.js)
-Open a *second* separate terminal in the root directory:
-```bash
-npm install
-npm run dev
-```
-*The React Dashboard will compile. Navigate your browser to `http://localhost:3000` to interact with the platform.*
+**Services initialized:**
+- **Frontend Dashboard:** `http://localhost:3000`
+- **Gateway Proxy:** `http://localhost:8001`
+- **Microservices Layer:** `8002-8007`
+
+*Wait a moment for the containers to build and initialize. Navigate your browser to `http://localhost:3000` to interact with the platform.*
 
 ---
 

@@ -1,0 +1,16 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install dependencies needed generally
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+# Since gateway needs httpx and python-multipart for file uploads
+RUN pip install --no-cache-dir httpx uvicorn python-multipart
+
+# We'll copy the shared code and the specific service at runtime using volume mounts or explicitly copy here
+# For production Docker image, we should copy everything or use docker-compose context efficiently.
+# Here we copy the whole microservices dir, but the CMD will target the specific module.
+COPY . /app/
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0"]
