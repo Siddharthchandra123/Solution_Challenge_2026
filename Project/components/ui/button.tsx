@@ -9,15 +9,15 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+        default: 'bg-primary text-primary-foreground hover:bg-primary/90 hover:-translate-y-1 hover:shadow-[0_8px_20px_oklch(0.75_0.15_195/0.4)] transition-all duration-300 ease-out',
         destructive:
-          'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
+          'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60 hover:-translate-y-1 hover:shadow-[0_8px_20px_oklch(0.55_0.22_30/0.4)] transition-all duration-300 ease-out',
         outline:
-          'border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
+          'border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 hover:-translate-y-1 hover:shadow-[0_8px_20px_oklch(0.30_0.03_260/0.4)] transition-all duration-300 ease-out',
         secondary:
-          'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+          'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:-translate-y-1 hover:shadow-[0_8px_20px_oklch(0.22_0.02_260/0.4)] transition-all duration-300 ease-out',
         ghost:
-          'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
+          'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 ease-out',
         link: 'text-primary underline-offset-4 hover:underline',
       },
       size: {

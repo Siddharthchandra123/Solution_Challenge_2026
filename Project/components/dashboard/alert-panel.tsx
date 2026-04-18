@@ -3,7 +3,8 @@
 import { AlertTriangle, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-export function AlertPanel() {
+export function AlertPanel({ config }: { config?: { target_col: string, sensitive_col: string } }) {
+  const sensitive = config?.sensitive_col || "Sex"
   return (
     <div className="glass rounded-xl border-l-4 border-l-warning p-6">
       <div className="flex flex-col lg:flex-row lg:items-center gap-4">
@@ -18,10 +19,9 @@ export function AlertPanel() {
             </span>
           </div>
           <p className="text-sm text-foreground leading-relaxed">
-            The current baseline model exhibits high proxy correlation via{" "}
-            <span className="font-semibold text-warning">[Zip Code]</span>. The
+            The current baseline model exhibits high proxy correlation. The
             Post-Processing Threshold Optimizer has actively redefined decision
-            boundaries to enforce demographic parity.
+            boundaries to enforce '{sensitive}' demographic parity.
           </p>
           <p className="text-xs text-muted-foreground">
             Review the correlation matrix and consider feature exclusion or reweighting strategies.

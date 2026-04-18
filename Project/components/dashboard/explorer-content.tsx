@@ -3,28 +3,20 @@
 import { useState, useEffect } from "react"
 import { Filter, RefreshCw, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import {
-  ScatterChart,
-  Scatter,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-  Legend,
-} from "recharts"
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, Legend } from "recharts"
+import { useConfig } from "@/hooks/use-config"
 
 export function ExplorerContent() {
   const [scatterData, setScatterData] = useState<any[]>([])
   const [correlations, setCorrelations] = useState<any[]>([])
   const [insights, setInsights] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const { config } = useConfig()
 
   const fetchData = async () => {
     setLoading(true)
     try {
-      const resp = await fetch("http://127.0.0.1:8000/api/explorer")
+      const resp = await fetch("http://127.0.0.1:8001/api/explorer")
       if (resp.ok) {
         const json = await resp.json()
         setScatterData(json.scatter_data)
@@ -65,7 +57,7 @@ export function ExplorerContent() {
           <span className="text-sm font-medium text-foreground">Active Configuration</span>
         </div>
         <p className="text-sm text-muted-foreground">
-           Currently mapping: <b>Experience</b> (X-Axis) vs <b>Income Score Model</b> (Y-Axis), segregated by <b>Sex</b> (Grouping).
+           Currently mapping variables towards <b>{config.target_col}</b> (Y-Axis), segregated by <b>{config.sensitive_col}</b> (Grouping).
         </p>
       </div>
 
@@ -133,20 +125,19 @@ export function ExplorerContent() {
                   wrapperStyle={{ paddingTop: "16px" }}
                   formatter={(value) => <span style={{ color: "oklch(0.65 0.02 260)" }}>{value}</span>}
                 />
-                <Scatter name="Male" data={scatterData.filter((d) => d.group === "Male")}>
-                  {scatterData
-                    .filter((d) => d.group === "Male")
-                    .map((entry, index) => (
-                      <Cell key={`cell-m-${index}`} fill="oklch(0.75 0.15 195)" fillOpacity={0.7} />
-                    ))}
-                </Scatter>
-                <Scatter name="Female" data={scatterData.filter((d) => d.group === "Female")}>
-                  {scatterData
-                    .filter((d) => d.group === "Female")
-                    .map((entry, index) => (
-                      <Cell key={`cell-f-${index}`} fill="oklch(0.65 0.22 30)" fillOpacity={0.7} />
-                    ))}
-                </Scatter>
+                {Array.from(new Set(scatterData.map(d => d.group))).map((groupName: any, groupIndex) => (
+                  <Scatter key={groupName} name={String(groupName)} data={scatterData.filter((d) => d.group === groupName)}>
+                    {scatterData
+                      .filter((d) => d.group === groupName)
+                      .map((entry, index) => (
+                        <Cell 
+                          key={`cell-${groupIndex}-${index}`} 
+                          fill={groupIndex % 2 === 0 ? "oklch(0.75 0.15 195)" : "oklch(0.65 0.22 30)"} 
+                          fillOpacity={0.7} 
+                        />
+                      ))}
+                  </Scatter>
+                ))}
               </ScatterChart>
             </ResponsiveContainer>
           </div>

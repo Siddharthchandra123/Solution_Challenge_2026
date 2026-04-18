@@ -1,39 +1,33 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Info, ChevronDown, ChevronUp, Lightbulb, Loader2 } from "lucide-react"
+import { Info, ChevronDown, ChevronUp, Lightbulb, Loader2, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import {
-  BarChart,
-  Bar,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine,
-} from "recharts"
+import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts"
+import { useConfig } from "@/hooks/use-config"
 
 export function ShapContent() {
   const [expandedSection, setExpandedSection] = useState<string | null>("global")
   const [apiData, setApiData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const { config } = useConfig()
+
+  const fetchData = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch("http://127.0.0.1:8001/api/shap")
+      if (response.ok) {
+        const json = await response.json()
+        setApiData(json)
+      }
+    } catch (err: any) {
+      console.error("SHAP API Offline")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await fetch("http://127.0.0.1:8000/api/shap")
-        if (response.ok) {
-          const json = await response.json()
-          setApiData(json)
-        }
-      } catch (err: any) {
-        console.error("SHAP API Offline")
-      } finally {
-        setLoading(false)
-      }
-    }
     fetchData()
   }, [])
 
@@ -46,15 +40,19 @@ export function ShapContent() {
       {/* Header */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">SHAP Explainability</h1>
+          <h1 className="text-2xl font-bold text-foreground">LIT Visualization Engine</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Reverse-engineering the Random Forest's Income predictions
+            Google Learning Interpretability Tool (LIT) interface for '{config.target_col}' predictions
           </p>
         </div>
         <div className="flex gap-2">
+          <Button variant="outline" className="border-border" onClick={fetchData}>
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Refresh Analysis
+          </Button>
           <Button variant="outline" className="border-border">
             <Info className="mr-2 h-4 w-4" />
-            What is SHAP?
+            What is LIT?
           </Button>
         </div>
       </div>
@@ -66,9 +64,9 @@ export function ShapContent() {
             <Lightbulb className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <p className="font-medium text-foreground">Understanding SHAP Values</p>
+            <p className="font-medium text-foreground">Learning Interpretability Tool (LIT) Mechanics</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              SHAP values show how much each feature (like Experience or Sex) contributes to pushing the model's likelihood of predicting High Income. Positive arrows push toward High Income, negative arrows push toward Low Income.
+              LIT evaluates model behavior using exact feature attributions. Positive arrows push toward one class, negative arrows push toward the opposite class. Interactive "What-If" counterfactuals are simulated on demand.
             </p>
           </div>
         </div>
@@ -78,7 +76,7 @@ export function ShapContent() {
         <div className="flex h-[400px] items-center justify-center rounded-xl glass">
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-muted-foreground">Synthesizing Game-Theory Shapley Values...</p>
+            <p className="text-muted-foreground">Booting Google LIT Dependencies...</p>
           </div>
         </div>
       ) : (

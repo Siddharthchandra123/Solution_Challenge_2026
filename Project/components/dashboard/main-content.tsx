@@ -6,16 +6,18 @@ import { Button } from "@/components/ui/button"
 import { MetricCards } from "./metric-cards"
 import { BiasCharts } from "./bias-charts"
 import { AlertPanel } from "./alert-panel"
+import { useConfig } from "@/hooks/use-config"
 
 export function MainContent() {
   const [apiData, setApiData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { config } = useConfig()
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("http://localhost:8000/api/mitigate")
+        const response = await fetch("http://localhost:8001/api/mitigate")
         if (!response.ok) throw new Error("Failed to fetch API")
         const json = await response.json()
         setApiData(json)
@@ -37,7 +39,7 @@ export function MainContent() {
             Algorithmic Mitigation & Audit
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Real-time bias detection and automated fairness optimization
+            Enforcing parity for protected attribute '{config.sensitive_col}' on '{config.target_col}' predictions
           </p>
         </div>
         <Button className="bg-primary text-primary-foreground hover:bg-primary/90 glow-cyan">
@@ -69,7 +71,7 @@ export function MainContent() {
           />
 
           {/* Alert Panel */}
-          <AlertPanel />
+          <AlertPanel config={config} />
         </div>
       )}
     </main>

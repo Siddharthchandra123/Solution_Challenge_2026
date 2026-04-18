@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+pandas
+numpy
+scikit-learn
+scipy
+fairlearn
+shap
+streamlit
+plotly
+google-generativeai
+sqlalchemy
+psycopg2-binary
+google-cloud-storage
+python-dotenv
+python-multipart
+httpx

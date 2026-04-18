@@ -3,16 +3,8 @@
 import { useState, useEffect } from "react"
 import { Circle, AlertTriangle, CheckCircle2, Clock, RefreshCw, Pause, Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine,
-} from "recharts"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts"
+import { useConfig } from "@/hooks/use-config"
 
 // Removed generic javascript data generator
 // Fetches from Python Instead
@@ -42,16 +34,10 @@ const recentAlerts = [
   {
     id: 4,
     severity: "warning",
-    message: "Demographic drift detected in Age vs Income distribution",
+    message: "Demographic drift detected in live data distribution",
     time: "12 hours ago",
     resolved: true,
   },
-]
-
-const modelEndpoints = [
-  { name: "income-classifier-v8.3", status: "healthy", requests: "12.4k/hr", latency: "124ms" },
-  { name: "sex-bias-auditor-v2.1", status: "healthy", requests: "8.2k/hr", latency: "89ms" },
-  { name: "experience-weights-v3.1", status: "degraded", requests: "5.1k/hr", latency: "342ms" },
 ]
 
 export function MonitorContent() {
@@ -59,10 +45,17 @@ export function MonitorContent() {
   const [timeSeriesData, setTimeSeriesData] = useState<any[]>([])
   const [apiData, setApiData] = useState<any>(null)
   const [lastUpdated, setLastUpdated] = useState(new Date())
+  const { config } = useConfig()
+
+  const modelEndpoints = [
+    { name: `${config.target_col.toLowerCase()}-classifier-v8.3`, status: "healthy", requests: "12.4k/hr", latency: "124ms" },
+    { name: `${config.sensitive_col.toLowerCase()}-bias-auditor-v2.1`, status: "healthy", requests: "8.2k/hr", latency: "89ms" },
+    { name: "feature-weights-v3.1", status: "degraded", requests: "5.1k/hr", latency: "342ms" },
+  ]
 
   const fetchData = async () => {
     try {
-      const resp = await fetch("http://127.0.0.1:8000/api/monitor")
+      const resp = await fetch("http://127.0.0.1:8001/api/monitor")
       if (resp.ok) {
         const json = await resp.json()
         setApiData(json)
@@ -143,8 +136,8 @@ export function MonitorContent() {
               <p className="text-xs text-muted-foreground">Predictions/hr</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-warning">{apiData?.current_disparity || "0.14"}</p>
-              <p className="text-xs text-muted-foreground">Current Disparity</p>
+              <p className="text-2xl font-bold text-warning">{apiData?.current_skew || "0.05"}</p>
+              <p className="text-xs text-muted-foreground">Attribution Drift</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-foreground">{apiData ? (apiData.current_accuracy * 100).toFixed(1) : "87.2"}%</p>
@@ -158,9 +151,9 @@ export function MonitorContent() {
       <div className="mb-6 grid gap-6 lg:grid-cols-2">
         {/* Disparity Over Time */}
         <div className="glass rounded-xl p-6">
-          <h3 className="mb-2 text-lg font-semibold text-foreground">Disparity Trend (24h)</h3>
+          <h3 className="mb-2 text-lg font-semibold text-foreground">Vertex AI Feature Attribution Drift</h3>
           <p className="mb-4 text-sm text-muted-foreground">
-            Demographic parity difference over time
+            L-infinity distance threshold monitoring
           </p>
           <div className="h-[240px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -199,7 +192,7 @@ export function MonitorContent() {
                 />
                 <Line
                   type="monotone"
-                  dataKey="disparity"
+                  dataKey="vertex_skew"
                   stroke="oklch(0.75 0.15 195)"
                   strokeWidth={2}
                   dot={false}

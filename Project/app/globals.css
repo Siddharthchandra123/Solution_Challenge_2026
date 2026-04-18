@@ -3,11 +3,31 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Glassmorphism utility classes */
 .glass {
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
+  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.glass:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 45px -10px oklch(0.75 0.15 195 / 0.4), 0 0 25px oklch(0.70 0.14 185 / 0.2);
+  border-color: oklch(0.75 0.15 195 / 0.4);
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 6s ease-in-out 3s infinite;
 }
 
 .glow-cyan {

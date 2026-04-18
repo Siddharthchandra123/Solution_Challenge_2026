@@ -6,6 +6,7 @@ import {
   Wrench, 
   BrainCircuit, 
   Activity,
+  Upload,
   Sparkles
 } from "lucide-react"
 import Link from "next/link"
@@ -19,11 +20,12 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { icon: BarChart3, label: "Data Diagnostics", href: "/diagnostics" },
+  { icon: Upload, label: "Upload Dataset", href: "/upload" },
+  { icon: BarChart3, label: "Diagnostics & Model Cards", href: "/diagnostics" },
   { icon: GitBranch, label: "Bivariate Explorer", href: "/explorer" },
   { icon: Wrench, label: "Bias Mitigation (The Fixer)", href: "/" },
-  { icon: BrainCircuit, label: "SHAP Explainability", href: "/shap" },
-  { icon: Activity, label: "Live Production Monitor", href: "/monitor" },
+  { icon: BrainCircuit, label: "LIT Explainability Engine", href: "/shap" },
+  { icon: Activity, label: "Vertex Drift Monitor", href: "/monitor" },
 ]
 
 export function Sidebar() {
