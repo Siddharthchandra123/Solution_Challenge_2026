@@ -56,9 +56,7 @@ export function ExplorerContent() {
           <Filter className="h-4 w-4 text-primary" />
           <span className="text-sm font-medium text-foreground">Active Configuration</span>
         </div>
-        <p className="text-sm text-muted-foreground">
-           Currently mapping variables towards <b>{config.target_col}</b> (Y-Axis), segregated by <b>{config.sensitive_col}</b> (Grouping).
-        </p>
+
       </div>
 
       {loading ? (

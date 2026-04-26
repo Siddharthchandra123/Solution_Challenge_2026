@@ -38,9 +38,7 @@ export function MainContent() {
           <h1 className="text-2xl font-bold text-foreground">
             Algorithmic Mitigation & Audit
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Enforcing parity for protected attribute '{config.sensitive_col}' on '{config.target_col}' predictions
-          </p>
+
         </div>
         <Button className="bg-primary text-primary-foreground hover:bg-primary/90 glow-cyan">
           <Download className="mr-2 h-4 w-4" />

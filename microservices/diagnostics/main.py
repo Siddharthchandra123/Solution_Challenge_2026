@@ -58,9 +58,19 @@ def get_diagnostics_data():
     ]
     
     # 3. Protected Attributes Detection
+    KNOWN_PROTECTED_TERMS = [
+        "sex", "gender", "race", "ethnicity", "age", "religion", 
+        "national origin", "disability", "marital", "zip", "location"
+    ]
+    
     protected_attrs = []
-    for col in [sensitive_col]:
-        if col in df.columns:
+    
+    for col in df.columns:
+        col_lower = col.lower()
+        # Detect if it's the configured sensitive column OR if it matches common protected keywords
+        is_protected = (col == sensitive_col) or any(term in col_lower for term in KNOWN_PROTECTED_TERMS)
+        
+        if is_protected:
             coverage = round((1 - (df[col].isna().sum() / total_records)) * 100, 1)
             groups = df[col].dropna().unique().tolist()
             if len(groups) > 5:
@@ -68,6 +78,7 @@ def get_diagnostics_data():
                 groups = ["Quartile 1", "Quartile 2", "Quartile 3", "Quartile 4"]
             else:
                 groups = [str(g) for g in groups]
+                
             protected_attrs.append({
                 "attribute": col,
                 "groups": groups,

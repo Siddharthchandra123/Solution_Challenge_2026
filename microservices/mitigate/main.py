@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
-from fairlearn.metrics import MetricFrame, demographic_parity_difference
+from fairlearn.metrics import MetricFrame, demographic_parity_difference, selection_rate
 from fairlearn.postprocessing import ThresholdOptimizer
 from fairlearn.reductions import ExponentiatedGradient, DemographicParity
 from shared.data import get_dataset, get_config
@@ -103,12 +103,28 @@ def mitigate_bias(strategy: str = Query("postprocessing", enum=["preprocessing",
     mit_acc = accuracy_score(y_test, y_pred_mitigated)
     mit_dp_diff = demographic_parity_difference(y_test, y_pred_mitigated, sensitive_features=A_test)
     
-    # Group stats for charting
-    mf_base = MetricFrame(metrics=accuracy_score, y_true=y_test, y_pred=y_pred_base, sensitive_features=A_test)
-    mf_mit = MetricFrame(metrics=accuracy_score, y_true=y_test, y_pred=y_pred_mitigated, sensitive_features=A_test)
+    # Group stats for charting (Positive Selection Rate)
+    mf_base = MetricFrame(metrics=selection_rate, y_true=y_test, y_pred=y_pred_base, sensitive_features=A_test)
+    mf_mit = MetricFrame(metrics=selection_rate, y_true=y_test, y_pred=y_pred_mitigated, sensitive_features=A_test)
     
     groups = list(mf_base.by_group.index)
     
+    # Try to map to privileged/unprivileged based on common knowledge
+    priv_group = "Male" if "Male" in groups else groups[0] if groups else "Privileged"
+    unpriv_group = "Female" if "Female" in groups else (groups[1] if len(groups) > 1 else "Unprivileged")
+
+    charts_before = [{
+        "category": "Pre-Mitigation",
+        "privileged": float(mf_base.by_group.get(priv_group, 0)),
+        "unprivileged": float(mf_base.by_group.get(unpriv_group, 0))
+    }]
+
+    charts_after = [{
+        "category": "Post-Mitigation",
+        "privileged": float(mf_mit.by_group.get(priv_group, 0)),
+        "unprivileged": float(mf_mit.by_group.get(unpriv_group, 0))
+    }]
+
     return {
         "strategy": strategy_label,
         "metrics": {
@@ -117,13 +133,8 @@ def mitigate_bias(strategy: str = Query("postprocessing", enum=["preprocessing",
             "mit_acc": round(mit_acc * 100, 1),
             "mit_dp": round(mit_dp_diff, 3)
         },
-        "charts": [
-            {
-                "group": str(g),
-                "before": round(mf_base.by_group.get(g, 0), 2),
-                "after": round(mf_mit.by_group.get(g, 0), 2)
-            } for g in groups
-        ]
+        "charts_before": charts_before,
+        "charts_after": charts_after
     }
 
 def _calculate_weights(y, A):

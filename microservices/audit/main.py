@@ -127,8 +127,8 @@ def run_audit(db: Session = Depends(get_db)):
         },
         "fairness_assessment": audit_results.get('fairness_assessment', 'Pending Review'),
         "data_validation": {
-            "anomaly_count": audit_results['data_validation'].get('anomaly_count', 0),
-            "has_anomalies": bool(audit_results['data_validation'].get('anomaly_count', 0) > 0),
+            "anomaly_count": audit_results['data_validation'].get('anomaly_count') or 0,
+            "has_anomalies": bool((audit_results['data_validation'].get('anomaly_count') or 0) > 0),
             "status": audit_results['data_validation'].get('status', 'success')
         },
         "skew_detection": audit_results.get('skew_detection', {"status": "Monitoring active"}),
